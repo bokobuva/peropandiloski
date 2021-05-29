@@ -83,7 +83,6 @@ class App extends React.Component {
 
 
       const response = await api_call.json();
-      console.log(response.main.temp)
       this.setState({
         city: `${response.name}, ${response.sys.country}`,
         country: response.sys.country,
@@ -97,7 +96,7 @@ class App extends React.Component {
 
       // seting icons
       this.get_WeatherIcon(this.weatherIcon, response.weather[0].id);
-
+      console.log(response)
       // console.log(response);
     } else {
       this.setState({
@@ -112,21 +111,21 @@ class App extends React.Component {
         <Form
           loadweather={this.getWeather}
           error={this.state.error}
-          temp_celsius={this.state.celsius}
+          temp_kelvin={this.state.celsius}
           cityname={this.state.city}
           weatherIcon={this.state.icon}
           temp_max={this.state.temp_max}
           temp_min={this.state.temp_min}
           description={this.state.description}
         />
-        <Weather
+        {/* <Weather
           cityname={this.state.city}
           weatherIcon={this.state.icon}
           temp_celsius={this.state.celsius}
           temp_max={this.state.temp_max}
           temp_min={this.state.temp_min}
           description={this.state.description}
-        />
+        /> */}
       </div>
     );
   }
