@@ -1,25 +1,33 @@
 import React, { useState, useEffect } from 'react';
 import './form-style.css'
 import Converter from "node-temperature-converter";
-import Weather from "../app_component/weather.component.jsx"
 
 
 const Form = (props) => {
-    console.log(props)
     const [temperatureValues, setTemperatureValues] = useState({
-        celsius: 0,
-        kelvin: 0,
-        fahrenheit: 0,
+        celsius: null,
+        kelvin: null,
+        fahrenheit: null,
     });
 
+    const [max, setMax] = useState({
+        celsius: null,
+        kelvin: null,
+        fahrenheit: null
+    });
+    const [min, setMin] = useState({
+        celsius: null,
+        kelvin: null,
+        fahrenheit: null
+    });
     const [displayTemp, setDisplayTemp] = useState("celsius");
 
 
     useEffect(() => {
-        if (props.temp_kelvin) {
+        if (!isNaN(props.temp_kelvin)) {
 
             const kelvin = new Converter.Kelvin(props.temp_kelvin);
-
+            console.log(kelvin)
             setTemperatureValues({
                 ...temperatureValues,
                 celsius: Math.round(kelvin.toCelsius()),
@@ -30,8 +38,27 @@ const Form = (props) => {
     }, [props.temp_kelvin]);
 
     useEffect(() => {
-        console.log(temperatureValues[displayTemp])
-    }, [displayTemp, temperatureValues]);
+        if (!isNaN(props.temp_max) && props.temp_max !== null) {
+            const kelvin = new Converter.Kelvin(Math.round(props.temp_max));
+            setMax({
+                ...max,
+                celsius: Math.round(kelvin.toCelsius()),
+                kelvin: Math.round(props.temp_max),
+                fahrenheit: Math.round(kelvin.toFahrenheit())
+            })
+        }
+        if (!isNaN(props.temp_min) && props.temp_min !== null) {
+            const kelvin = new Converter.Kelvin(Math.round(props.temp_max));
+            setMin({
+                ...min,
+                celsius: Math.round(kelvin.toCelsius()),
+                kelvin: Math.round(props.temp_min),
+                fahrenheit: Math.round(kelvin.toFahrenheit())
+            })
+        }
+        console.log(props.temp_max, props.temp_min)
+    }, [props.temp_max, props.temp_min]);
+
     return (
         <div className="container h-100">
             <form onSubmit={props.loadweather}>
@@ -60,13 +87,13 @@ const Form = (props) => {
                 <div className="row">
                     <div className="col-md-3">
                         <label htmlFor="c">Celsius</label>
-                        <input className="temp-type" type="radio" name="temperature" id="c" value="c" onChange={() => displayTemp !== "celsius" && setDisplayTemp("celsius")}></input>
+                        <input className="temp-type" type="radio" name="temperature" id="c" value="c" checked={displayTemp === "celsius"} onChange={() => displayTemp !== "celsius" && setDisplayTemp("celsius")}></input>
 
                         <label htmlFor="k">Kelvin</label>
-                        <input className="temp-type" type="radio" name="temperature" id="k" valiue="k" onChange={() => displayTemp !== "kelvin" && setDisplayTemp("kelvin")}></input>
+                        <input className="temp-type" type="radio" name="temperature" id="k" valiue="k" checked={displayTemp === "kelvin"} onChange={() => displayTemp !== "kelvin" && setDisplayTemp("kelvin")}></input>
 
                         <label htmlFor="f">Fahrenheit</label>
-                        <input className="temp-type" type="radio" name="temperature" id="f" value="f" onChange={() => displayTemp !== "fahrenheit" && setDisplayTemp("fahrenheit")}></input>
+                        <input className="temp-type" type="radio" name="temperature" id="f" value="f" checked={displayTemp === "fahrenheit"} onChange={() => displayTemp !== "fahrenheit" && setDisplayTemp("fahrenheit")}></input>
 
                     </div>
 
@@ -81,11 +108,17 @@ const Form = (props) => {
 
                     {/* Get Celsius */}
                     {temperatureValues.kelvin !== 0 && (
-                        <h1 className="py-2">{temperatureValues[displayTemp]}&#x2103;</h1>
+                        <h1 className="py-2">{temperatureValues[displayTemp]}
+                            <span className={displayTemp === "celsius" && temperatureValues.celsius !== null ? "inline" : "hide"}>&#8451;</span>
+                            <span className={displayTemp === "fahrenheit" && temperatureValues.fahrenheit !== null ? "inline" : "hide"}>&#8457;</span>
+                            <span className={displayTemp === "kelvin" && temperatureValues.kelvin !== null ? "inline" : "hide"}>&#8490;</span>
+                        </h1>
                     )}
 
                     {/* show max and min temp */}
-                    {/* {maxminTemp(props.temp_min, props.temp_max)} */}
+                    {min.celsius !== null && min[displayTemp]}{max.celsius !== null && max[displayTemp]}
+
+
 
                     {/* Weather description */}
                     <h4 className="py-3">
